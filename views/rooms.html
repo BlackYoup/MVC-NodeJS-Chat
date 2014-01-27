@@ -1,0 +1,44 @@
+<!DOCTYPE>
+<html>
+<head>
+	<meta lang="fr" />
+	<meta charet="utf8" />
+	<title>Chat</title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/reset.css">
+	<link rel="stylesheet/less" type="text/css" href="/stylesheets/style.less" />
+	<link rel="stylesheet/less" type="text/css" href="/stylesheets/rooms.less" />
+	<script src="/javascripts/ressources/jQuery.js"></script>
+	<script src="/javascripts/ressources/socket.io.js"></script>
+	<script src="/javascripts/ressources/constants.js"></script>
+	<script src="/javascripts/controlers/roomsControler.js"></script>
+	<script src="/javascripts/models/roomsModel.js"></script>
+	<script src="/javascripts/views/roomsView.js"></script>
+	<script src="/javascripts/ressources/less.js" async></script>
+	<script>
+		$(document).ready(function(){
+			var Model = new RoomsModel();
+			var Controler = new RoomsControler(Model);
+			var View = new RoomsView(Model);
+
+			View.attach(Controler);
+			Model.attach(View);
+
+			View.init();
+		});
+	</script>
+</head>
+<body>
+	<table id="roomTable">
+	<tr>
+		<th>Room name</th>
+		<th>Clients</th>
+		<th>Join</th>
+	</tr>
+	</table>
+	<div id="newRoomDiv">
+		<label for="newRoom">Connect to a temporary room</label>
+		<input type="text" id="newRoom" placeholder="Name of room"/>
+		<button id="addRoom">Connect !</button>
+	</div>
+</body>
+</html>

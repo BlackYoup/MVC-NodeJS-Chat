@@ -1,0 +1,92 @@
+@border : 5px solid #f3e9e9;
+@clientsWidth: 10%;
+@suppInfosWidth: 10%;
+@leftWidth : (100 - @clientsWidth);
+@messageHeight : .calc;
+@writeMessageHeight : 55px;
+@hourWidth : 65px;
+
+.calc{
+	/* Firefox */
+	height: -moz-calc(~'100% - @{writeMessageHeight}');
+	/* WebKit */
+	height: -webkit-calc(~'100% - @{writeMessageHeight}');
+	/* Opera */
+	height: -o-calc(~'100% - @{writeMessageHeight}');
+	/* Standard */
+	height: calc(~'100% - @{writeMessageHeight}');
+}
+
+#chat{
+	width: 100%;
+	height: 100%;
+	background-color: #fbf7f7;
+}
+#messagesContainer{
+	.calc;
+	overflow: auto;
+	max-height: 100%;
+}
+#messages{
+	max-width: @leftWidth - @suppInfosWidth;
+	min-width: (@leftWidth - 25);
+	display: inline-block;
+	vertical-align: top;
+	word-wrap: break-word;
+	height: 100%;
+}
+#clients{
+	min-width: @clientsWidth;
+	height: 100%;
+	display: inline-block;
+	position: absolute;
+	top:0px;
+	right: 0px;
+	border-left: @border;
+	color: #18b015;
+	overflow: auto;
+}
+#writeMessage{
+	width: @leftWidth;
+	display: inline-block;
+	text-align: center;
+	border-top: @border;
+	padding: 10px 0px 10px 0px;
+	position: absolute;
+	bottom: 0px;
+}
+#messageText{
+	width: 90%;
+	height: 30px;
+	font-size: 16px;
+}
+#sendMessage{
+	height: 25px;
+	margin-left: 10px;
+}
+.chatMessage, .client{
+	margin: 5px 5px 5px 10px;
+}
+#messageSuppInfos{
+	min-width: @suppInfosWidth;
+	max-width: 20%;
+	border-right: @border;
+	display: inline-block;
+	min-height: 100%;
+}
+.messageHour{
+	display: inline-block;
+	color: #4590e5;
+	margin: 5px 0px 0px 5px;
+}
+.messageFrom{
+	display: inline-block;
+	color: #ed8a0a;
+	margin: 5px 10px 0px 0px;
+}
+.mentionned{
+	color: #18b015;
+}
+.client{
+	cursor: pointer;
+}

@@ -1,0 +1,44 @@
+<!DOCTYPE>
+<html>
+<head>
+	<meta lang="fr" />
+	<meta charset="utf8" />
+	<title>Chat</title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/reset.css">
+	<link rel="stylesheet/less" type="text/css" href="/stylesheets/style.less" />
+	<link rel="stylesheet/less" type="text/css" href="/stylesheets/chat.less" />
+	<script src="/javascripts/ressources/jQuery.js"></script>
+	<script src="/javascripts/ressources/socket.io.js"></script>
+	<script src="/javascripts/ressources/constants.js"></script>
+	<script src="/javascripts/controlers/chatControler.js"></script>
+	<script src="/javascripts/models/chatModel.js"></script>
+	<script src="/javascripts/views/chatView.js"></script>
+	<script>
+		$(document).ready(function(){
+			var Model = new ChatModel();
+			var Controler = new ChatControler(Model);
+			var View = new ChatView(Model);
+
+			Model.attach(View);
+			View.attach(Controler);
+			View.init();
+		});
+	</script>
+</head>
+<body>
+<div id="chat">
+	<div id="messagesContainer">
+		<!-- <div id="messageSuppInfos"></div>-->
+		<div id="messages"></div>
+	</div>
+	<div id="writeMessage">
+		<input type="text" id="messageText"/><button id="sendMessage">Send</button>
+	</div>
+	<div id="clients"></div>
+</div>
+<audio id="notification">
+	<source src="/sounds/notification.ogg" type="audio/ogg">
+	<source src="/sounds/notification.mp3" type="audio/mpeg">
+</audio>
+</body>
+</html>

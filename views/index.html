@@ -1,0 +1,35 @@
+<!DOCTYPE>
+<html>
+<head>
+	<meta lang="fr" />
+	<meta charet="utf-8" />
+	<title>Chat</title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/reset.css">
+	<link rel="stylesheet/less" type="text/css" href="/stylesheets/style.less" />
+	<link rel="stylesheet/less" type="text/css" href="/stylesheets/index.less" />
+	<script src="/javascripts/ressources/jQuery.js"></script>
+	<script src="/javascripts/ressources/socket.io.js"></script>
+	<script src="/javascripts/ressources/constants.js"></script>
+	<script src="/javascripts/controlers/loginControler.js"></script>
+	<script src="/javascripts/models/loginModel.js"></script>
+	<script src="/javascripts/views/loginView.js"></script>
+	<script src="/javascripts/ressources/less.js" async></script>
+	<script>
+		$(document).ready(function(){
+			var Model = new LoginModel();
+			var Controler = new LoginControler(Model);
+			var View = new LoginView(Model);
+
+			View.attach(Controler);
+			Model.attach(View);
+
+			View.init();
+		});
+	</script>
+</head>
+<body>
+	<div id="login">
+	<label for="nickname">NickName : </label><input type="text" id="nickname" /><button id="submitNick">Connexion</button>
+	</div>
+</body>
+</html>
