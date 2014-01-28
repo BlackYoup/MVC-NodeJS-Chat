@@ -46,13 +46,14 @@ function ChatView(Model){
 				self.notify('newMessage', {text: message});
 			}
 		});
-		$('#messageText').on('keypress', function(e){
+		$('#messageText').on('keydown', function(e){
 			if(e.keyCode == 13){
 				$('#sendMessage').click();
 			}
 			else if(e.keyCode == 38){
 				self.notify('lastMessageInput');
 			}
+			console.log(e);
 		}).focus();
 		$('#messageText').focus(function(){
 			updateTitle(0);
@@ -158,6 +159,16 @@ function ChatView(Model){
 	}
 
 	function setInput(text){
-		$('#messageText').val(text);
+		var oldVal = $('#messageText').val();
+		if(oldVal !== ''){
+			oldVal += ' ';
+		}
+		$('#messageText').val(oldVal + text);
+		$('#messageText').on('blur', function(){
+			$(this).off('blur');
+			setTimeout(function(){
+				$('#messageText').focus();
+			}, 10);
+		}).blur();
 	}
 }

@@ -30,6 +30,7 @@ function ChatModel(){
 			var splitted = message.text.split(' ');
 			this.doAction(action, splitted);
 		}
+		lastMessage = message.text;
 		socket.emit('newMessage', message);
 	};
 	this.getAllMessages = function(){
@@ -48,6 +49,7 @@ function ChatModel(){
 	};
 	this.getAllLeft = function(){
 		var ret = allLeft.slice(0);
+		allLeft.length = 0;
 		
 		return allLeft;
 	};
@@ -82,6 +84,7 @@ function ChatModel(){
 	};
 	this.getMentions = function(){
 		var ret = mentions.slice(0);
+		mentions.length = 0;
 		return mentions;
 	};
 	this.doAction = function(action, args){
@@ -96,19 +99,13 @@ function ChatModel(){
 		}
 	};
 	this.ping = function(args){
-		console.log('pinging');
 		if(args.length <= 1){
 			socket.emit('ping', new Date().getTime());
 		}
 		else if(args.length > 1){
 			args.splice(0, 1);
-			console.log('HERE');
 			socket.emit('multiPing', args);
-		}
-		else{
-			console.log(args);
-		}
-		
+		}		
 	};
 	this.sendLastMessage = function(){
 		this.notifier('lastMessageInput');
@@ -120,8 +117,8 @@ function ChatModel(){
 	this.getLastSelectedPSeudo = function(){
 		return '@' + lastSelectedPseudo;
 	};
-	this.sendLastMessage = function(){
-		return lastMessage; //
+	this.getLastMessage = function(){
+		return lastMessage;
 	};
 	this.init = function(){
 		setInterval(function(){
