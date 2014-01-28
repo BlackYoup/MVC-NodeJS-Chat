@@ -30,17 +30,11 @@ function ChatModel(){
 			var splitted = message.text.split(' ');
 			this.doAction(action, splitted);
 		}
-		else{
-			socket.emit('newMessage', message);
-		}
-		
+		socket.emit('newMessage', message);
 	};
 	this.getAllMessages = function(){
-		var allMessages = awaitingMessages;
-		var toSplice = awaitingMessages.length;
-		setTimeout(function(){
-			awaitingMessages.splice(0, toSplice);
-		}, 100);
+		var allMessages = awaitingMessages.slice(0);
+		awaitingMessages.length = 0;
 		return allMessages;
 	};
 	this.getClients = function(){
@@ -53,10 +47,7 @@ function ChatModel(){
 		socket.emit('getMyRoom');
 	};
 	this.getAllLeft = function(){
-		var length = allLeft.length;
-		setTimeout(function(){
-			allLeft.splice(0, length);
-		}, 100);
+		var ret = allLeft.slice(0);
 		
 		return allLeft;
 	};
@@ -90,10 +81,7 @@ function ChatModel(){
 		this.notifier('mention');
 	};
 	this.getMentions = function(){
-		var index = mentions.length;
-		setTimeout(function(){
-			mentions.splice(0, index);
-		}, 100);
+		var ret = mentions.slice(0);
 		return mentions;
 	};
 	this.doAction = function(action, args){
@@ -187,7 +175,8 @@ function ChatModel(){
 		var actualTime = new Date().getTime();
 		var ping = (actualTime - firstPing);
 		self.sendMessage({
-			text: 'Ping of ' + myName + ' is : ' + ping + 'ms'
+			text: 'Ping of ' + myName + ' is : ' + ping + 'ms',
+			from: 'Server'
 		});
 	});
 
