@@ -140,7 +140,7 @@ function ChatModel(){
 		if(args.room === inRoom){
 			self.notifier('newMessage');
 			if(args.from !== myName){
-				pendingMessages += awaitingMessages.length;
+				++pendingMessages;
 				self.notifier('updateTitle');
 			}
 		}
@@ -149,7 +149,7 @@ function ChatModel(){
 	socket.on('connected', function(args){
 		awaitingMessages.push({type: 'connected', content: args});
 		if(args.room === inRoom){
-			pendingMessages += awaitingMessages.length;
+			++pendingMessages;
 			self.notifier('newMessage');
 			self.notifier('updateTitle');
 		}
@@ -183,7 +183,7 @@ function ChatModel(){
 			content: args
 		});
 		if(args.room === inRoom){
-			pendingMessages += awaitingMessages.length;
+			++pendingMessages;
 			self.notifier('newMessage');
 			self.notifier('updateTitle');
 		}

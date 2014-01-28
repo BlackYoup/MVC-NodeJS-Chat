@@ -16,7 +16,7 @@ var app = express();
 var cookieParser = express.cookieParser('mySecretThere');
 var sessionStore = new connect.middleware.session.MemoryStore();
 
-var SERVER_PORT = 8080;
+var SERVER_PORT = 25000;
 
 // all environments
 app.set('port', process.env.PORT || SERVER_PORT);
