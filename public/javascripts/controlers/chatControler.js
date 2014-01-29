@@ -32,6 +32,9 @@ function ChatControler(Model){
 			case 'setSelectedPseudo':
 				Model.writeSelectedPseudo(args);
 			break;
+			case 'autoComplete':
+				Model.autoComplete(args);
+			break;
 			default:
 				'No action specified for ' + command + 'command';
 			break;

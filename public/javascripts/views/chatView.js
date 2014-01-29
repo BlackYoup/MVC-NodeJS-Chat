@@ -30,10 +30,19 @@ function ChatView(Model){
 				updateMentions(Model.getMentions());
 			break;
 			case 'lastMessageInput':
-				setInput(Model.getLastMessage());
+				setInput(Model.getLastMessage(), false);
 			break;
 			case 'getSelectedPSeudo':
 				setInput(Model.getLastSelectedPSeudo());
+			break;
+			case 'autoComplete':
+				handleAutoCompletion(Model.getAwaitingAutoComplete());
+			break;
+			case 'systemMessage':
+				displaySystemMessages(Model.getSystemMessages());
+			break;
+			case 'clear':
+				clearChat();
 			break;
 		}
 	};
@@ -53,7 +62,9 @@ function ChatView(Model){
 			else if(e.keyCode == 38){
 				self.notify('lastMessageInput');
 			}
-			console.log(e);
+			else if(e.keyCode == 9){
+				self.notify('autoComplete', $('#messageText').val());
+			}
 		}).focus();
 		$('#messageText').focus(function(){
 			updateTitle(0);
@@ -67,29 +78,30 @@ function ChatView(Model){
 	};
 
 	function displayMessage(allMessages){
+		deleteSystemMessages();
 		for(var i = 0, j = allMessages.length; i < j; i++){
 			if(allMessages[i].type === 'newMessage'){
 				var msgInfos = allMessages[i].content;
-				var createdDiv = makeDivs(msgInfos.from, msgInfos.text);
+				var createdDiv = makeDivs(msgInfos.from, msgInfos.text, msgInfos.time);
 				mentionned(createdDiv);
 			}
 			else if(allMessages[i].type === 'connected'){
 				var infos = allMessages[i].content;
 				displayClient(infos.userName);
-				makeDivs(infos.from, infos.userName + ' has joined the room');
+				makeDivs(infos.from, infos.userName + ' has joined the room', infos.time);
 			}
 			else if(allMessages[i].type === 'leave'){
 				var infos = allMessages[i].content;
-				makeDivs(infos.from, infos.userName + ' has left the room');
+				makeDivs(infos.from, infos.userName + ' has left the room', infos.time);
 				$('#' + infos.userName.replace(/ /g, '_')).remove();
 			}
 			playNotif();
 		}
 	}
 
-	function makeDivs(from, message){
+	function makeDivs(from, message, hour){
 		var container = $('<div></div>').appendTo($('#messages')).attr('class', 'chatMessage');
-		var spanHour = $('<span></span>').attr('class', 'messageHour').text(displayHour()).appendTo(container);
+		var spanHour = $('<span></span>').attr('class', 'messageHour').text(hour).appendTo(container);
 		var spanFrom = $('<span></span>').attr('class', 'messageFrom').text(from).appendTo(container);
 		var spanText = $('<span></span>').attr('class', 'messageText').text(message).appendTo(container);
 		$('#messagesContainer'). scrollTop(99999999999);
@@ -115,16 +127,6 @@ function ChatView(Model){
 				self.notify('setSelectedPseudo', psd);
 			});
 		}
-	}
-
-	function displayHour(){
-		var date = new Date();
-
-		var hour = (date.getHours() < 10 ? '0' : '') + date.getHours();
-		var min = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
-		var sec = (date.getSeconds() < 10 ? '0' : '') + date.getSeconds();
-
-		return '[' + hour + ':' + min + ':' + sec + ']';
 	}
 
 	function updateMySelf(){
@@ -158,9 +160,14 @@ function ChatView(Model){
 		}
 	}
 
-	function setInput(text){
+	function setInput(text, oldValBool){
+		var oldValBool = (typeof oldValBool === 'undefined' ? true : oldValBool);
+
 		var oldVal = $('#messageText').val();
-		if(oldVal !== ''){
+		if(oldValBool === false){
+			oldVal = '';
+		}
+		else if(oldVal !== ''){
 			oldVal += ' ';
 		}
 		$('#messageText').val(oldVal + text);
@@ -170,5 +177,54 @@ function ChatView(Model){
 				$('#messageText').focus();
 			}, 10);
 		}).blur();
+	}
+
+	function handleAutoCompletion(autoComplete){
+		var val = $('#messageText').val();
+		val = val.replace(new RegExp(autoComplete.start + '$'), autoComplete.complete + ' ');
+		$('#messageText').val(val);
+		setTimeout(function(){
+			$('#messageText').focus();
+		}, 50);
+	}
+
+	function displaySystemMessages(systemMessage){
+
+		deleteSystemMessages();
+
+		var systemMessageContainer = $('<div></div>').attr('class', 'systemMessageContainer');
+
+		for(var i = 0, j = systemMessage.length; i < j; i++){
+			var spanText = makeDivs(systemMessage[i].from, systemMessage[i].message, systemMessage[i].time);
+			spanText.attr('class', 'systemMessage');
+
+			var args = systemMessage[i].args || [];
+
+			for(var k = 0, l = args.length; k < l; k++){
+				var div = $('<div></div>').appendTo(systemMessageContainer).attr('class', 'systemArgs').text('- ' + args[k]);
+			}
+		}
+		systemMessageContainer.appendTo($('#messages'));
+		$('#messagesContainer').scrollTop(99999999999);
+		setTimeout(function(){
+			$('#messageText').focus();
+		}, 50);
+	}
+
+	function deleteSystemMessages(){
+		$('.systemMessage').parents('.chatMessage').fadeOut(function(){
+			$(this).remove();
+		});
+		$('.systemMessageContainer').fadeOut(function(){
+			$(this).remove();
+		});
+	}
+
+	function clearChat(){
+		$('#messages').children().each(function(){
+			$(this).fadeOut(function(){
+				$(this).remove();
+			});
+		});
 	}
 }

@@ -11,6 +11,8 @@ function ChatModel(){
 	var myName;
 	var mentions = [];
 	var lastMessage;
+	var awaiTingComplete;
+	var systemMessage = [];
 
 	this.attach = function(view){
 		allViews.push(view);
@@ -21,6 +23,7 @@ function ChatModel(){
 		}
 	};
 	this.sendMessage = function(message){
+		var toSend = true;
 		if(message.text.indexOf('!') === 0){
 			var breaker = message.text.indexOf(' ');
 			if(breaker === -1){
@@ -28,10 +31,19 @@ function ChatModel(){
 			}
 			var action = message.text.substr(1, breaker).trim();
 			var splitted = message.text.split(' ');
-			this.doAction(action, splitted);
+			toSend = this.doAction(action, splitted);
 		}
-		lastMessage = message.text;
-		socket.emit('newMessage', message);
+		if(typeof message.save === 'undefined' || message.save === true){
+			lastMessage = message.text;
+		}
+		if(toSend){
+			socket.emit('newMessage', message);
+		}
+		else{
+			message.room = inRoom;
+			message.from = myName;
+			receiveMessage(message);
+		}
 	};
 	this.getAllMessages = function(){
 		var allMessages = awaitingMessages.slice(0);
@@ -85,13 +97,18 @@ function ChatModel(){
 	this.getMentions = function(){
 		var ret = mentions.slice(0);
 		mentions.length = 0;
-		return mentions;
+		return ret;
 	};
 	this.doAction = function(action, args){
 		switch(action){
 			case 'ping':
 			console.log('action : ' + action);
 				this.ping(args);
+				return true;
+			break;
+			case 'clear':
+				this.notifier('clear');
+				return false;
 			break;
 			default:
 				console.log('no action affected to : ' + action);
@@ -120,6 +137,57 @@ function ChatModel(){
 	this.getLastMessage = function(){
 		return lastMessage;
 	};
+	this.autoComplete = function(toComplete){
+		var index = toComplete.lastIndexOf('@');
+		if(index > -1){
+			var startUserName = toComplete.substr((index + 1));
+			allClients.sort();
+			var found = 0;
+			var tempComplete = [];
+
+			for(var i = 0, j = allClients.length; i < j; i++){
+				var reg = new RegExp('^'+startUserName, 'i');
+				if(allClients[i].match(reg) !== null){
+					tempComplete.push(allClients[i]);
+					++found;
+				}
+			}
+			if(found < 1){
+				systemMessage.push({
+					type: 'NO_CLIENTS_FOUND',
+					message: 'No clients found',
+					from: 'Server',
+					time: hour()
+				});
+				this.notifier('systemMessage');
+			}
+			else if(found === 1){
+				awaiTingComplete = {
+					start: startUserName,
+					complete: tempComplete[0]
+				};
+				this.notifier('autoComplete');
+			}
+			else if(found > 1){
+				systemMessage.push({
+					type: 'TOO_MANY_POSSIBILITIES',
+					message: 'Many clients found, here is a list of matching clients',
+					args: tempComplete,
+					from: 'Server',
+					time: hour()
+				});
+				this.notifier('systemMessage');
+			}
+		}
+	};
+	this.getAwaitingAutoComplete = function(){
+		return awaiTingComplete;
+	};
+	this.getSystemMessages = function(){
+		var ret = systemMessage.slice(0);
+		systemMessage.length = 0;
+		return ret;
+	};
 	this.init = function(){
 		setInterval(function(){
 			self.getClients();
@@ -136,17 +204,11 @@ function ChatModel(){
 	});
 
 	socket.on('message', function(args){
-		awaitingMessages.push({type: 'newMessage', content: args});
-		if(args.room === inRoom){
-			self.notifier('newMessage');
-			if(args.from !== myName){
-				++pendingMessages;
-				self.notifier('updateTitle');
-			}
-		}
+		receiveMessage(args);
 	});
 
 	socket.on('connected', function(args){
+		args.time = hour();
 		awaitingMessages.push({type: 'connected', content: args});
 		if(args.room === inRoom){
 			++pendingMessages;
@@ -173,11 +235,13 @@ function ChatModel(){
 		var ping = (actualTime - firstPing);
 		self.sendMessage({
 			text: 'Ping of ' + myName + ' is : ' + ping + 'ms',
-			from: 'Server'
+			from: 'Server',
+			save: false
 		});
 	});
 
 	socket.on('leave', function(args){
+		args.time = hour();
 		awaitingMessages.push({
 			type: 'leave',
 			content: args
@@ -188,4 +252,26 @@ function ChatModel(){
 			self.notifier('updateTitle');
 		}
 	});
+
+	function hour(){
+		var date = new Date();
+
+		var hour = (date.getHours() < 10 ? '0' : '') + date.getHours();
+		var min = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+		var sec = (date.getSeconds() < 10 ? '0' : '') + date.getSeconds();
+
+		return '[' + hour + ':' + min + ':' + sec + ']';
+	}
+
+	function receiveMessage(args){
+		args.time = hour();
+		awaitingMessages.push({type: 'newMessage', content: args});
+		if(args.room === inRoom){
+			self.notifier('newMessage');
+			if(args.from !== myName){
+				++pendingMessages;
+				self.notifier('updateTitle');
+			}
+		}
+	}
 }

@@ -14,9 +14,6 @@ function RoomsModel(){
 	};
 	this.sendRooms = function(){
 		socket.emit('getAllRooms');
-		setTimeout(function(){
-			self.sendRooms();
-		}, 10000);
 	};
 	this.getRooms = function(){
 		return allRooms;
