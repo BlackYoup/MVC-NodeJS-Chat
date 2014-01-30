@@ -21,6 +21,9 @@ function RoomsModel(){
 	this.joinRoom = function(roomInfos){
 		socket.emit('joinRoom', roomInfos);
 	};
+	this.init = function(){
+		socket = surchargeSocketIO(socket);
+	};
 
 	socket.on('allRooms', function(receivedRooms){
 		allRooms = receivedRooms;

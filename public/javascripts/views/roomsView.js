@@ -46,6 +46,7 @@ function RoomsView(Model){
 				$('#addRoom').click();
 			}
 		});
+		this.notify('init');
 		this.notify('getRooms', {});
 	};
 }

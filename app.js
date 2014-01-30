@@ -41,6 +41,7 @@ app.get('/', routes.index);
 app.get('/index', routes.index);
 app.get('/rooms', routes.rooms);
 app.get('/chat/:chatID', routes.chat);
+app.get('/reconnect', routes.reconnect);
 
 var webServer = http.createServer(app).listen(app.get('port'), function(){
   Debug('Express server listening on port ' + app.get('port'));

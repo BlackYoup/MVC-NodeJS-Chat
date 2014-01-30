@@ -52,7 +52,18 @@ exports.chat = function(req, res){
         res.redirect('http://no.pe/');
     }
 };
-
+exports.reconnect = function(req, res){
+    if(typeof req.session.inRoom !== 'undefined'){
+        var message = 'connected';
+    }
+    else{
+        var message = 'refresh';
+    }
+    res.writeHead(200, {'Content-Type': 'text/plain','Content-Length':message.length});
+    res.write(message);
+    res.end();
+    
+};
 function render(file, res, opt){
     var opt = opt || null;
     fs.readFile('./views/'+file, function(err, html){

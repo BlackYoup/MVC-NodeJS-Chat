@@ -46,5 +46,6 @@ function LoginView(Model){
 				$('#submitNick').click();
 			}
 		}).focus();
+		self.notify('init');
 	};
 }

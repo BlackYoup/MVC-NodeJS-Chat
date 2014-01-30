@@ -24,6 +24,17 @@ function ChatModel(){
 	};
 	this.sendMessage = function(message){
 		var toSend = true;
+
+		if(message.text.length > 1000){
+			setTimeout(function(){
+				userNotification({
+					message: 'You can\'t send more than 1000 chars',
+					status: false
+				});
+			}, 200);
+			return false;
+		}
+
 		if(message.text.indexOf('!') === 0){
 			var breaker = message.text.indexOf(' ');
 			if(breaker === -1){
@@ -194,6 +205,7 @@ function ChatModel(){
 		}, 10000);
 
 		$.getScript("/javascripts/ressources/less.js");
+		socket = surchargeSocketIO(socket);
 	};
 
 	socket.on('myRoom', function(roomName){
@@ -275,3 +287,5 @@ function ChatModel(){
 		}
 	}
 }
+
+//La societé STC Remorquage, propose désormais ses services aux particuliers, pour le remorquage de votre véhicule panne auto, moto et utilitaire. Nous intervenons dans tout les Pays de la loire, notamment sur Nantes,Angers et Cholet 7j/7.Nous proposons aussi le rapatriement de votre véhicule dans toutes la france. Enlèvement d'épave Nos épavistes sont toujours disponibles à vous aider pour tout service d'enlèvement épave GRATUIT 7j/7. De plus la destruction de votre automobile se fait dans le respect de la législation également pour le recyclage. Suite à votre demande d'enlèvement d'épave nous intervenons rapidement dans les meilleurs délais (moins d'une heure après votre appel). Coordonées Contactez nous dés maintenant au : 06.80.71.81.10 Tarifs étudiants / jeunes permis La societé STC Remorquage sait à quel point la vie des étudiants est difficile. Quoi de plus catastrophique que de tomber en panne pour un budget serré. STC Remorquage dit "STOP" au matraquage des jeunes, en proposant des remises de 10% à tous les jeunes étudiants et jeunes permis, pour tout dépannage et remorquage. Notre force de caractère La force de notre entreprise réside dans nos valeurs, STC Remorquage s'engage à satisfaire chacun de ses clients, en leurs offrant une prestation rapide et de qualité.

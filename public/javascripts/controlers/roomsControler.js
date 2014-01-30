@@ -4,6 +4,9 @@ function RoomsControler(Model){
 
 	this.receive = function(command, args){
 		switch(command){
+			case 'init':
+				Model.init();
+			break;
 			case 'getRooms':
 				Model.sendRooms();
 			break;

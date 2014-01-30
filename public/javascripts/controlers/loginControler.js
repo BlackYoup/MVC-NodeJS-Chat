@@ -7,7 +7,9 @@ function LoginControler(Model){
 			case 'login':
 				Model.login(args);
 			break;
-			
+			case 'init':
+				Model.init();
+			break;
 			default:
 				'No action specified for ' + command + 'command';
 			break;

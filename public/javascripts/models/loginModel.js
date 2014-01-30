@@ -24,6 +24,9 @@ function LoginModel(){
 	this.getLoginStatus = function(){
 		return loginStatus;
 	};
+	this.init = function(){
+		socket = surchargeSocketIO(socket);
+	}
 
 	socket.on('registration', function(status){
 		loginStatus = status;
