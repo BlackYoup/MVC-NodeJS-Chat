@@ -9,7 +9,18 @@ function LoginModel(){
 	};
 
 	this.login = function(args){
-		if(args.pseudo.length > 30){
+		var pattern = /^\w*$/;
+		if(args.pseudo.match(pattern) === null){
+			setTimeout(function(){
+				userNotification({
+					message: 'Your pseudo may only contains A-Z a-z or 0-9 characters',
+					status: false
+				});
+			}, 200);
+			
+			return false;
+		}
+		else if(args.pseudo.length > 30){
 			alert('Max length of pseudo is 30 chars. Please try again');
 		}
 		else{

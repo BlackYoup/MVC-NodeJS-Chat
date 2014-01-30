@@ -64,6 +64,10 @@ exports.reconnect = function(req, res){
     res.end();
     
 };
+exports.logoff = function(req, res){
+    funcs.logoff(req.session);
+    res.redirect('/index');
+};
 function render(file, res, opt){
     var opt = opt || null;
     fs.readFile('./views/'+file, function(err, html){

@@ -60,6 +60,13 @@ function surchargeSocketIO(socket){
         console.log('Error on socket : ' + err);
     });
 
+    socket.on('kill', function(){
+        userNotification({
+            message: 'Server is shutting down (may be restarting). See you later !',
+            status: false
+        }, 20);
+    });
+
     return socket;
 }
 
@@ -107,7 +114,7 @@ function createWindow()
         }
     });
 }
-function userNotification(object){
+function userNotification(object, top){
     createWindow();
     notif = $('<div></div>');
     $('.notification').each(function(){
@@ -129,24 +136,34 @@ function userNotification(object){
         colorClass = object.status;
     }
 
-    notif.attr('class', 'notification').css({
+    notif.css({
         backgroundColor: colorClass
     }).appendTo($('#frontWindow')).text(object.message);
 
-        notif.css({
-            left: ((notif.parent().width() - notif.outerWidth()) / 2) + notif.parent().scrollLeft() + "px", 
-            top: '0px',
-            display: 'inline-Block'
-        }).animate({
-            top: ((notif.parent().height() - notif.outerHeight()) / 2) + notif.parent().scrollTop() + "px"
-        }, 'fast', 'swing', null);
+    if(typeof top !== 'undefined'){
+        var className = 'notificationTop';
+        var top = top;
+    }
+    else{
+        var className = 'notification';
+        var top = ((notif.parent().height() - notif.outerHeight()) / 2) + notif.parent().scrollTop();
+    }
+
+
+    notif.attr('class', className).css({
+        left: ((notif.parent().width() - notif.outerWidth()) / 2) + notif.parent().scrollLeft() + "px", 
+        top: '0px',
+        display: 'inline-Block'
+    }).animate({
+        top: top + "px"
+    }, 'fast', 'swing', null);
 
     onOuttaClick($('#frontWindow'), function(){
         if(typeof object.onFrontWindowClick === 'function'){
             object.onFrontWindowClick();
             return false;
         }
-        $('.notification').animate({
+        $('.notification, .notificationTop').animate({
             top: $('body').height()+'px',
         }, 'fast', 'swing', function(){
             $('#frontWindow').fadeOut(function(){
@@ -169,7 +186,7 @@ function onOuttaClick(div, callBack){
 }
 
 function refresh(){
-    var i = 5;
+    var i = 3;
     var callback = function(){
         document.location.reload();
     }
@@ -193,3 +210,13 @@ function refresh(){
         }
     }, 1000);
 }
+
+function logout(){
+    document.location = 'http://' + SERVER_ADDR + ':' + SERVER_PORT + '/logoff';
+}
+
+$(document).ready(function(){
+    $('#logoff').on('click', function(){
+        logout();
+    });
+});

@@ -42,6 +42,7 @@ app.get('/index', routes.index);
 app.get('/rooms', routes.rooms);
 app.get('/chat/:chatID', routes.chat);
 app.get('/reconnect', routes.reconnect);
+app.get('/logoff', routes.logoff);
 
 var webServer = http.createServer(app).listen(app.get('port'), function(){
   Debug('Express server listening on port ' + app.get('port'));
@@ -55,4 +56,11 @@ require('./lib/chatServer')({
 
 process.on('uncaughtException',function(err){
     console.log(err);
+});
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+process.on('SIGINT', function () {
+    funcs.kill();
 });
