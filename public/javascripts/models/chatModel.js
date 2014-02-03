@@ -123,6 +123,7 @@ function ChatModel(){
 			break;
 			default:
 				console.log('no action affected to : ' + action);
+				return true;
 			break;
 		}
 	};
@@ -146,7 +147,7 @@ function ChatModel(){
 		return '@' + lastSelectedPseudo;
 	};
 	this.getLastMessage = function(){
-		return lastMessage;
+		return (lastMessage || '');
 	};
 	this.autoComplete = function(toComplete){
 		var index = toComplete.lastIndexOf('@');
@@ -249,6 +250,26 @@ function ChatModel(){
 			text: 'Ping of ' + myName + ' is : ' + ping + 'ms',
 			from: 'Server',
 			save: false
+		});
+	});
+
+	socket.on('adminSet', function(){
+		userNotification({
+			message: 'You now have superAdmin power',
+			status: true
+		});
+	});
+
+	socket.on('kicked', function(){
+		userNotification({
+			message: 'You have been kicked from this channel',
+			status: false
+		});
+	});
+	socket.on('banned', function(){
+		userNotification({
+			message: 'You have been banned from this server',
+			status: false
 		});
 	});
 

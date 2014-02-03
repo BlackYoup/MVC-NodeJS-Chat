@@ -8,21 +8,50 @@ function LoginView(Model){
 			document.location = './rooms';
 		}
 		else if(status === 'ALREADY_USED'){
-			alert('This username is already used');
 			$('#nickname').focus();
+			setTimeout(function(){
+				userNotification({
+					message: 'This username is already used',
+					status: false
+				});
+			}, 100);
+			
 		}
 		else if(status === 'MAX_LENGTH'){
-			alert('Max length of pseudo is 30 chars. Please try again');
 			$('#nickname').focus();
+			setTimeout(function(){
+				userNotification({
+					message: 'Max length of pseudo is 30 chars. Please try again',
+					status: false
+				});
+			}, 100);
+			
+		}
+		else if(status === 'MIN_LENGTH'){
+			$('#nickname').focus();
+			setTimeout(function(){
+				userNotification({
+					message: 'Min length of pseudo is 1 char. Please try again',
+					status: false
+				});
+			}, 100);
 		}
 		else if(status === 'INVALID_CHARS'){
 			$('#nickname').focus();
 			setTimeout(function(){
 				userNotification({
-					message: 'Your pseudo may only contains A-Z a-z or 0-9 characters',
+					message: 'Your pseudo may only contains A-Z a-z, 0-9 characters or it has to be different from "Server" or "Admin"',
 					status: false
 				});
-			}, 200);
+			}, 100);
+		}
+		else if(status === 'BANNED'){
+			setTimeout(function(){
+				userNotification({
+					message: 'Your IP is banned from this server',
+					status: false
+				});
+			}, 100);
 		}
 	}
 

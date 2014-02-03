@@ -93,7 +93,7 @@ function ChatView(Model){
 			else if(allMessages[i].type === 'leave'){
 				var infos = allMessages[i].content;
 				makeDivs(infos.from, infos.userName + ' has left the room', infos.time);
-				$('#' + infos.userName.replace(/ /g, '_')).remove();
+				$('#client' + infos.userName.replace(/ /g, '_')).remove();
 			}
 			playNotif();
 		}
@@ -117,12 +117,13 @@ function ChatView(Model){
 		}
 		else{
 			var psdDiv = psd.replace(/ /g, '_');
-			if($('#' + psdDiv).length > 0){
+			if($('#client' + psdDiv).length > 0){
 				return false;
 			}
 			$('<div></div>').appendTo($('#clients')).attr({
 				class: 'client',
-				id: psdDiv
+				id: 'client'+psdDiv,
+				title: psdDiv
 			}).text(psd).on('click', function(){
 				self.notify('setSelectedPseudo', psd);
 			});

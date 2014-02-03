@@ -1,8 +1,15 @@
 function surchargeSocketIO(socket){
+    var leaving = false;
+    $(window).bind('beforeunload', function(){
+        leaving = true;
+    });
     socket.on('disconnect', function(){
+        if(leaving){
+            return false;
+        }
         userNotification({
             status: false,
-            message: 'You have been disconnected from server'
+            message: 'Server connection lost'
         });
     });
 
@@ -65,6 +72,17 @@ function surchargeSocketIO(socket){
             message: 'Server is shutting down (may be restarting). See you later !',
             status: false
         }, 20);
+    });
+
+    socket.on('preUpdate', function(time){
+        userNotification({
+            message: 'You have to refresh for needed modifications. This will automatically refresh in ' + time + 's',
+            status: '#ed8a0a'
+        });
+    });
+
+    socket.on('updateNow', function(){
+        document.location.reload();
     });
 
     return socket;

@@ -13,7 +13,8 @@ var funcs = require('./lib/funcs');
 var Debug = funcs.Debug;
 
 var app = express();
-var cookieParser = express.cookieParser('mySecretThere');
+var cookieSecret = 'mySecretThere';
+var cookieParser = express.cookieParser(cookieSecret);
 var sessionStore = new connect.middleware.session.MemoryStore();
 
 var SERVER_PORT = 25000;
@@ -28,7 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(cookieParser);
-app.use(express.session({store: sessionStore}));
+app.use(express.session({ store: sessionStore }));
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -57,9 +58,6 @@ require('./lib/chatServer')({
 process.on('uncaughtException',function(err){
     console.log(err);
 });
-
-process.stdin.resume();
-process.stdin.setEncoding('utf8');
 
 process.on('SIGINT', function () {
     funcs.kill();

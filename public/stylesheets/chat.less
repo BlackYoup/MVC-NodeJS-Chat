@@ -30,17 +30,17 @@ body{
 	.calc;
 	overflow: auto;
 	max-height: 100%;
+	max-width: @leftWidth;
 }
 #messages{
-	max-width: @leftWidth - @suppInfosWidth;
-	min-width: (@leftWidth - 25);
+	width: 100%;
 	display: inline-block;
 	vertical-align: top;
 	word-wrap: break-word;
 	height: 100%;
 }
 #clients{
-	min-width: @clientsWidth;
+	width: @clientsWidth;
 	height: 100%;
 	display: inline-block;
 	position: absolute;

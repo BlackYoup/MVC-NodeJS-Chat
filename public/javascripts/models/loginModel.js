@@ -9,19 +9,34 @@ function LoginModel(){
 	};
 
 	this.login = function(args){
-		var pattern = /^\w*$/;
-		if(args.pseudo.match(pattern) === null){
+		var regExp = new RegExp('((\\s+|\\W+)|(admin|server)+)', 'gi');
+		if(regExp.test(args.pseudo) === true){
 			setTimeout(function(){
 				userNotification({
-					message: 'Your pseudo may only contains A-Z a-z or 0-9 characters',
+					message: 'Your pseudo may only contains A-Z a-z, 0-9 characters or it has to be different from "Server" or "Admin"',
 					status: false
 				});
-			}, 200);
+			}, 100);
 			
 			return false;
 		}
 		else if(args.pseudo.length > 30){
-			alert('Max length of pseudo is 30 chars. Please try again');
+			setTimeout(function(){
+				userNotification({
+					message: 'Max length of pseudo is 30 chars. Please try again',
+					status: false
+				});
+			}, 100);
+			return false;
+		}
+		else if(args.pseudo.length < 1){
+			setTimeout(function(){
+				userNotification({
+					message: 'Min length of pseudo is 1 char. Please try again',
+					status: false
+				});
+			}, 100);
+			return false;
 		}
 		else{
 			socket.emit('login', args.pseudo);
