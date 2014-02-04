@@ -13,6 +13,8 @@ function ChatModel(){
 	var lastMessage;
 	var awaiTingComplete;
 	var systemMessage = [];
+	var lastMessageTimeStamp = 0;
+	var spamFailed = 0;
 
 	this.attach = function(view){
 		allViews.push(view);
@@ -24,16 +26,40 @@ function ChatModel(){
 	};
 	this.sendMessage = function(message){
 		var toSend = true;
+		var now = new Date().getTime();
+		var markedSpam = false;
 
-		if(message.text.length > 1000){
+		if(now < lastMessageTimeStamp){
+			if(spamFailed < 5){
+				++spamFailed;
+				markedSpam = true;
+			}
+			else{
+				setTimeout(function(){
+					userNotification({
+						message: 'Do not spam, please',
+						status: false
+					});
+				}, 100);
+				return false;
+			}
+		}
+		else if(message.text.length > 1000){
 			setTimeout(function(){
 				userNotification({
 					message: 'You can\'t send more than 1000 chars',
 					status: false
 				});
-			}, 200);
+			}, 100);
 			return false;
 		}
+
+		if(!markedSpam){
+			spamFailed = 0;
+		}
+
+		lastMessageTimeStamp = (now + 1000);
+		spamFailed = 0;
 
 		if(message.text.indexOf('!') === 0){
 			var breaker = message.text.indexOf(' ');
