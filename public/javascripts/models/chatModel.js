@@ -149,6 +149,10 @@ function ChatModel(){
 				this.notifier('clear');
 				return false;
 			break;
+			case 'help':
+				showHelp();
+				return false;
+			break;
 			default:
 				console.log('no action affected to : ' + action);
 				return true;
@@ -338,6 +342,10 @@ function ChatModel(){
 		args.time = hour(args.time || false);
 		awaitingMessages.push({type: 'newMessage', content: args});
 		if(args.room === inRoom){
+			args.me = false;
+			if(args.from === myName){
+				args.me = true;
+			}
 			self.notifier('newMessage');
 			if(args.from !== myName){
 				++pendingMessages;
@@ -345,6 +353,29 @@ function ChatModel(){
 			}
 		}
 	}
-}
 
-//La societé STC Remorquage, propose désormais ses services aux particuliers, pour le remorquage de votre véhicule panne auto, moto et utilitaire. Nous intervenons dans tout les Pays de la loire, notamment sur Nantes,Angers et Cholet 7j/7.Nous proposons aussi le rapatriement de votre véhicule dans toutes la france. Enlèvement d'épave Nos épavistes sont toujours disponibles à vous aider pour tout service d'enlèvement épave GRATUIT 7j/7. De plus la destruction de votre automobile se fait dans le respect de la législation également pour le recyclage. Suite à votre demande d'enlèvement d'épave nous intervenons rapidement dans les meilleurs délais (moins d'une heure après votre appel). Coordonées Contactez nous dés maintenant au : 06.80.71.81.10 Tarifs étudiants / jeunes permis La societé STC Remorquage sait à quel point la vie des étudiants est difficile. Quoi de plus catastrophique que de tomber en panne pour un budget serré. STC Remorquage dit "STOP" au matraquage des jeunes, en proposant des remises de 10% à tous les jeunes étudiants et jeunes permis, pour tout dépannage et remorquage. Notre force de caractère La force de notre entreprise réside dans nos valeurs, STC Remorquage s'engage à satisfaire chacun de ses clients, en leurs offrant une prestation rapide et de qualité.
+	function showHelp(){
+		systemMessage.push({
+			from: 'Client',
+			message: 'Here is a list of available commands',
+			time: hour(),
+			args:[
+				'------ Client commands ------',
+				'@ : selector for client (eg: @Nickname)',
+				'@[tab] : autocomplete client\'s name',
+				'!ping : Ping yourself',
+				'!ping @nickname : ping a particular client (!ping @ ping all clients)',
+				'!clear : clear the chatbox',
+				'!Iamgod [password] : get super Admin power',
+				'------ Admin commands --------',
+				'!kick @nickname : kick client from room',
+				'!ban @nickname : ban client from server for a derterminate time (Default: 1hour)',
+				'!update [seconds] : refresh all clients for an update (script update ?), you can provide a time. Default is 10 seconds'
+			]
+		});
+		setTimeout(function(){
+			self.notifier('systemMessage');
+		}, 100);
+		
+	}
+}

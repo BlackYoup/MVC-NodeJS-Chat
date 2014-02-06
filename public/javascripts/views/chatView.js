@@ -44,6 +44,9 @@ function ChatView(Model){
 			case 'clear':
 				clearChat();
 			break;
+			case 'showHelp':
+				showHelp();
+			break;
 		}
 	};
 
@@ -79,11 +82,16 @@ function ChatView(Model){
 
 	function displayMessage(allMessages){
 		deleteSystemMessages();
+		var playNotifSound = true;
+
 		for(var i = 0, j = allMessages.length; i < j; i++){
 			if(allMessages[i].type === 'newMessage'){
 				var msgInfos = allMessages[i].content;
 				var createdDiv = makeDivs(msgInfos.from, msgInfos.text, msgInfos.time);
 				mentionned(createdDiv);
+				if(msgInfos.me){
+					playNotifSound = false;
+				}
 			}
 			else if(allMessages[i].type === 'connected'){
 				var infos = allMessages[i].content;
@@ -95,7 +103,10 @@ function ChatView(Model){
 				makeDivs(infos.from, infos.userName + ' has left the room', infos.time);
 				$('#client' + infos.userName.replace(/ /g, '_')).remove();
 			}
-			playNotif();
+
+			if(playNotifSound){
+				playNotif();
+			}
 		}
 	}
 
@@ -206,7 +217,7 @@ function ChatView(Model){
 			}
 		}
 		systemMessageContainer.appendTo($('#messages'));
-		$('#messagesContainer').scrollTop(99999999999);
+		$('#messagesContainer').scrollTop(99999999999); // this number because $('#messageContainer').height() don't give the good height
 		setTimeout(function(){
 			$('#messageText').focus();
 		}, 50);
