@@ -42,6 +42,7 @@ app.get('/', routes.index);
 app.get('/index', routes.index);
 app.get('/rooms', routes.rooms);
 app.get('/chat/:chatID', routes.chat);
+app.get('/chat', routes.rooms);
 app.get('/reconnect', routes.reconnect);
 app.get('/logoff', routes.logoff);
 

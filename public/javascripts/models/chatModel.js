@@ -29,6 +29,8 @@ function ChatModel(){
 		var now = new Date().getTime();
 		var markedSpam = false;
 
+		message.text.trim();
+
 		if(now < lastMessageTimeStamp){
 			if(spamFailed < 5){
 				++spamFailed;
@@ -226,6 +228,9 @@ function ChatModel(){
 		systemMessage.length = 0;
 		return ret;
 	};
+	this.getLastMessages = function(){
+		socket.emit('getLastMessages');
+	};
 	this.init = function(){
 		setInterval(function(){
 			self.getClients();
@@ -233,6 +238,8 @@ function ChatModel(){
 
 		$.getScript("/javascripts/ressources/less.js");
 		socket = surchargeSocketIO(socket);
+
+		self.getLastMessages();
 	};
 
 	socket.on('myRoom', function(roomName){
@@ -312,8 +319,13 @@ function ChatModel(){
 		}
 	});
 
-	function hour(){
-		var date = new Date();
+	function hour(particularTime){
+		if(particularTime){
+			var date = new Date(parseInt(particularTime));
+		}
+		else{
+			var date = new Date();
+		}
 
 		var hour = (date.getHours() < 10 ? '0' : '') + date.getHours();
 		var min = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
@@ -323,7 +335,7 @@ function ChatModel(){
 	}
 
 	function receiveMessage(args){
-		args.time = hour();
+		args.time = hour(args.time || false);
 		awaitingMessages.push({type: 'newMessage', content: args});
 		if(args.room === inRoom){
 			self.notifier('newMessage');
