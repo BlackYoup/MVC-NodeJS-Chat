@@ -114,9 +114,47 @@ function ChatView(Model){
 		var container = $('<div></div>').appendTo($('#messages')).attr('class', 'chatMessage');
 		var spanHour = $('<span></span>').attr('class', 'messageHour').text(hour).appendTo(container);
 		var spanFrom = $('<span></span>').attr('class', 'messageFrom').text(from).appendTo(container);
-		var spanText = $('<span></span>').attr('class', 'messageText').text(message).appendTo(container);
+		var spanText = $('<span></span>').attr('class', 'messageText').text(message);
+		spanText = makeUrl(message, spanText);
+		spanText.appendTo(container);
 		$('#messagesContainer'). scrollTop(99999999999);
 		return spanText;
+	}
+
+	function makeUrl(message, span){
+		var url;
+		var urlHttp = message.indexOf('http://');
+		
+		if(urlHttp < 0){
+			var urlHttps = message.indexOf('https://');
+			if(urlHttps < 0){
+				url = -1;
+			}
+			else{
+				url = urlHttps;
+			}
+		}
+		else{
+			url = urlHttp;
+		}
+
+		if(url > -1){
+			var startUrl = message.substr(url);
+			var endSpace = startUrl.indexOf(' ');
+			var endUrl = (endSpace > -1 ? endSpace : message.length);
+			var allUrl = message.substr(url, endUrl);
+			var urlText = '<a href="' + allUrl + '" target="_blank">' + allUrl + '</a>';
+		}
+
+		if(typeof urlText !== 'undefined'){
+			span.html(span.html().replace(allUrl, urlText));
+		}
+
+		if(typeof endUrl !== 'undefined' && (message.indexOf('http://', endUrl) > -1 || message.indexOf('https://', endUrl) > -1)){
+			span = makeUrl(message.substr(endUrl+1), span);
+		}
+
+		return span;
 	}
 
 	function displayClient(psd){

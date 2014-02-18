@@ -1,3 +1,4 @@
 *.sublime-project
 *.bat
 *.sublime-workspace
+node_modules/
